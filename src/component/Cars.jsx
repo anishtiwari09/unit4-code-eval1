@@ -9,7 +9,7 @@ export default function Cars(){
         console.log('filter',filter)
         if(!filter){
         var config={
-            url:"http://localhost:3000/cars",
+            url:"http://localhost:3000/cars?type=suv",
             method:"get"
         }}
         else
@@ -32,6 +32,9 @@ export default function Cars(){
     const handleFilter=(e)=>{
        setFilter(e.target.value)
     }
+    const handlePrice=(e)=>{
+
+    }
 if(isLoading)
 return <h3>...loading</h3>
     
@@ -39,11 +42,36 @@ return(<>
 <div>
     <div><h3>Filter</h3></div>
     <div>
-        <div><label>sort by car year</label>
-    <input type="radio" name="filter" id="filter" onChange={handleFilter} value="year"/></div>
+        <div><label>Filter by car year</label>
+    
     <div>
-    <label>sort by car type</label>
-    <input type="radio" name="filter" id="filter" onChange={handleFilter} value="type"/>
+        {datas.map(item=>{
+           return( <><label>{item.year}</label>
+            <input type="checkbox" value={item.year} onChange={handleFilter} className="year"/></>
+            )
+        })}
+    </div>
+    </div>
+    <div>
+    <label>filter by car type</label>
+    <div>
+        {datas.map(item=>{
+           return( <><label>{item.type}</label>
+            <input type="checkbox" value={item.type} onChange={handleFilter}/></>
+            )
+        })}
+    </div>
+    </div>
+    </div>
+    <div>
+        <h3>sort by price</h3>
+        <div>
+        <div><label>Low to High</label>
+    <input type="radio" name="price" onChange={handlePrice} value="asc"/></div>
+    <div>
+    <label>High to Low</label>
+    <input type="radio" name="price"  onChange={handlePrice} value="desc"/>
+    </div>
     </div>
     </div>
 </div>
