@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import axios from "axios"
 import CarsDetail from "./carItem"
+import FilterItem from "./filterItem"
 export default function Cars(){
     const [price,setPrice]=useState(null)
     const [filter,setFilter]=useState(null)
@@ -11,7 +12,7 @@ export default function Cars(){
         console.log('filter',filter)
         if(!filter&&!price){
         var config={
-            url:"http://localhost:3000/cars",
+            url:"http://localhost:3000/cars?",
             method:"get"
         }}
         else if(!price)
@@ -20,8 +21,13 @@ export default function Cars(){
             url:`http://localhost:3000/cars?${filter}`,
             method:"get"
         }}
+        else if(!filter){
+            var config={
+                url:`http://localhost:3000/cars?${price}`,
+                method:"get"
+            }} 
         
-        else{
+        else {
         var config={
             url:`http://localhost:3000/cars?${filter}&${price}`,
             method:"get"
@@ -47,25 +53,41 @@ export default function Cars(){
 useEffect(()=>{
 handleGetData(filter)
 },[filter,price])
-const handleFilter=(e)=>{
-        let filters=null
-if(!filter)
-{
-     filters=`${e.target.className}=${e.target.value}`
-}
-else 
-{
-     filters=`${filter}&${e.target.className}=${e.target.value}`
-}
-setFilter(filters)
 
-
-    
+const handleFilter=()=>{
+    const yearElem=document.getElementsByClassName('year')
+    const typeElem=document.getElementsByClassName('type')
+    let filter1=null
+    for(let item of yearElem)
+    {
+        if(item.checked===true)
+        if(!filter1)
+        filter1=`year=${item.value}`
+        else
+        filter1=`${filter1}&year=${item.value}`
+    }
+    let filter2=null
+    for(let item of typeElem)
+    {
+        if(item.checked===true)
+        if(!filter2)
+        filter2=`type=${item.value}`
+        else
+        filter2=`${filter2}&type=${item.value}`
+    }
+    let param=null;
+    if(filter1&&filter2)
+    param=`${filter1}&${filter2}`
+    else if(!filter1)
+    param=filter2
+    else if(!filter2)
+    param=filter1
+setFilter(param)
 }
-const handlePrice=()=>{
-
-}
-    
+const handlePrice=(e)=>{
+    let price=`_sort=price&_order=${e.target.value}`
+    setPrice(price)
+}    
 if(isLoading)
 return <h3>...loading</h3>
     
@@ -73,26 +95,18 @@ return(<>
 <div>
     <div><h3>Filter</h3></div>
     <div>
-        <div><label>Filter by car year</label>
-    
-    <div>
-        {datas1.map(item=>{
-           return( <><label>{item.year}</label>
-            <input type="checkbox" value={item.year} onChange={handleFilter} className="year"/></>
-            )
-        })}
-    </div>
-    </div>
-    <div>
-    <label>filter by car type</label>
-    <div>
-        {datas1.map(item=>{
-           return( <><label>{item.type}</label>
-            <input type="checkbox" value={item.type} onChange={handleFilter} className="type"/></>
-            )
-        })}
-    </div>
-    </div>
+        <h4>Filter by Year</h4>
+        {
+            <div>{
+                datas1.map(item=><FilterItem key={"year"+item.id}onClick={handleFilter}title={item.year} type="year"/>)
+                }</div>
+        }
+        <h4>Filter by Type</h4>
+        {
+            <div>{
+                datas1.map(item=><FilterItem key={"type"+item.id} onClick={handleFilter}title={item.type} type="type"/>)
+                }</div>
+        }
     </div>
     <div>
         <h3>sort by price</h3>
@@ -101,7 +115,7 @@ return(<>
     <input type="radio" name="price" onChange={handlePrice} value="asc"/></div>
     <div>
     <label>High to Low</label>
-    <input type="radio" name="price"  onChange={handlePrice} value="desc"/>
+    <input type="radio" name="price"  onChange={handlePrice} value="desc "/>
     </div>
     </div>
     </div>
